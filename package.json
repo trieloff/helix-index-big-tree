@@ -33,7 +33,14 @@
   "homepage": "https://github.com/adobe/helix-service#readme",
   "dependencies": {
     "@adobe/helix-status": "5.1.1",
-    "epsagon": "1.37.1"
+    "epsagon": "1.37.1",
+    "gunzip-stream": "^1.0.1",
+    "minimatch": "^3.0.4",
+    "openwhisk": "^3.20.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
+    "strip-dirs": "^3.0.0",
+    "tar-stream": "^2.1.0"
   },
   "devDependencies": {
     "@adobe/eslint-config-helix": "1.1.0",

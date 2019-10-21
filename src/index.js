@@ -11,24 +11,65 @@
  */
 
 const { wrap } = require('@adobe/helix-status');
-const { openWhiskWrapper } = require('epsagon');
+const request = require('request-promise-native');
+const minimatch = require('minimatch');
+const openwhisk = require('openwhisk');
+const tar = require('tar-stream');
+const { createGunzip } = require('gunzip-stream');
+const strip = require('strip-dirs');
 
 /**
  * This is the main function
  * @param {string} name name of the person to greet
  * @returns {object} a greeting
  */
-function main({ name = 'world' } = {}) {
+async function main({
+  owner, repo, ref, branch, pattern = '**/*.{md,jpg}', token,
+} = {}) {
+  if (!(owner && repo && ref && branch)) {
+    throw new Error('Required arguments missing');
+  }
+
+  const ow = openwhisk();
+
+  const list = tar.extract();
+  const jobs = [];
+
+  list.on('entry', (header, stream, next) => {
+    const path = strip(header.name, 1);
+
+    if (minimatch(path, pattern)) {
+      ow.actions.invoke({
+        name: 'helix-index/index-file@1.2.1',
+        blocking: false,
+        result: false,
+        params: {
+          owner, repo, ref, path, branch, sha: 'initial', token,
+        },
+      });
+      jobs.push(path);
+    }
+
+    stream.on('end', () => {
+      next();
+    });
+
+    stream.resume();
+  });
+
+  await request(
+    `https://github.com/${owner}/${repo}/tarball/${ref}`,
+  )
+    .pipe(createGunzip())
+    .pipe(list);
+
   return {
-    body: `Hello, ${name}.`,
+    statusCode: 201,
+    body: {
+      delegated: 'update-index',
+      jobs,
+    },
   };
 }
 
-module.exports = {
-  main: wrap(openWhiskWrapper(main, {
-    token_param: 'EPSAGON_TOKEN',
-    appName: 'Helix Services',
-    metadataOnly: false,
-    ignoredKeys: [/^[A-Z0-9_]+$/, 'token'],
-  })),
-};
+module.exports = { main: wrap(main) };
