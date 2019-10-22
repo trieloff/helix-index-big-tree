@@ -36,6 +36,7 @@ async function main({
 
   const ow = openwhisk();
 
+  try {
   const prom = new Promise((resolve) => {
     const list = tar.extract();
     const jobs = [];
@@ -44,6 +45,7 @@ async function main({
       const path = strip(header.name, 1);
 
       if (minimatch(path, pattern)) {
+        console.log('invoking', path);
         ow.actions.invoke({
           name: 'helix-index/index-file@1.2.1',
           blocking: false,
@@ -56,6 +58,7 @@ async function main({
       }
 
       stream.on('end', () => {
+        console.log('stream end');
         next();
       });
 
@@ -63,6 +66,7 @@ async function main({
     });
 
     list.on('finish', () => {
+      console.log('tar finished');
       resolve({
         statusCode: 201,
         body: {
@@ -77,7 +81,15 @@ async function main({
       .pipe(list);
   });
 
+  console.log('donwload started');
+
+  const res = await prom;
+  console.log('completed');
   return prom;
+  } catch (e) {
+    console.error(e);
+    
+  }
 }
 
 module.exports = { main: wrap(main) };
