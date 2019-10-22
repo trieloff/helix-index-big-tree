@@ -15,7 +15,6 @@
 'use strict';
 
 const assert = require('assert');
-const { AssertionError } = require('assert');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 // const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
@@ -59,15 +58,9 @@ describe('Index Tests', () => {
   });
 
   it('index function bails if neccessary arguments are missing', async () => {
-    try {
-      await index();
-      assert.fail('this should not happen');
-    } catch (e) {
-      if (e instanceof AssertionError) {
-        throw e;
-      }
-      assert.ok(e);
-    }
+    const res = await index();
+    assert.equal(res.statusCode, 400);
+    assert.equal(res.body, 'Required arguments missing');
   });
 
   it('index function makes HTTP requests', async () => {

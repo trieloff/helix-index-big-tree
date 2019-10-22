@@ -27,7 +27,11 @@ async function main({
   owner, repo, ref, branch, pattern = '**/*.{md,jpg}', token,
 } = {}) {
   if (!(owner && repo && ref && branch)) {
-    throw new Error('Required arguments missing');
+    console.error('Required arguments missing');
+    return {
+      statusCode: 400,
+      body: 'Required arguments missing'
+    }
   }
 
   const ow = openwhisk();
