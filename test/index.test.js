@@ -15,16 +15,90 @@
 'use strict';
 
 const assert = require('assert');
-const index = require('../src/index.js').main;
+const { AssertionError } = require('assert');
+const proxyquire = require('proxyquire');
+const sinon = require('sinon');
+// const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
+// const FSPersister = require('@pollyjs/persister-fs');
+// const setupPolly = require('@pollyjs/core').setupMocha;
 
 describe('Index Tests', () => {
-  it('index function is present', async () => {
-    const result = await index({});
-    assert.deepEqual(result, { body: 'Hello, world.' });
+  /*
+  // polly screws up the recording of tar.gz downloads. enable at your own risk
+  setupPolly({
+    logging: false,
+    recordFailedRequests: true,
+    recordIfMissing: true,
+    adapters: [NodeHttpAdapter],
+    persister: FSPersister,
+    persisterOptions: {
+      fs: {
+        recordingsDir: 'test/fixtures',
+      },
+    },
+    matchRequestsBy: {
+      headers: {
+        exclude: ['authorization', 'user-agent'],
+      },
+    },
+  });
+  */
+
+
+  let index;
+  let invoke;
+  beforeEach(() => {
+    invoke = sinon.fake();
+    index = proxyquire('../src/index.js', {
+      openwhisk: () => ({
+        actions: {
+          invoke,
+        },
+      }),
+    }).main;
   });
 
-  it('index function returns an object', async () => {
-    const result = await index();
-    assert.equal(typeof result, 'object');
+  it('index function bails if neccessary arguments are missing', async () => {
+    try {
+      await index();
+      assert.fail('this should not happen');
+    } catch (e) {
+      if (e instanceof AssertionError) {
+        throw e;
+      }
+      assert.ok(e);
+    }
   });
+
+  it('index function makes HTTP requests', async () => {
+    const result = await index({
+      owner: 'trieloff',
+      repo: 'helix-demo',
+      ref: 'e266e69024853cc6b25fdcfb963d2d0014162f1c',
+      branch: 'master',
+    });
+    assert.equal(typeof result, 'object');
+    assert.deepEqual(result.body, {
+      delegated: 'update-index',
+      jobs: 1,
+    });
+
+    sinon.assert.callCount(invoke, result.body.jobs);
+  }).timeout(2000);
+
+  it('index filters by pattern', async () => {
+    const result = await index({
+      owner: 'trieloff',
+      repo: 'helix-demo',
+      ref: 'ca8959afbb2668c761e47a4563f054da2444ab30',
+      branch: 'master',
+      pattern: '**/*.{md,html}',
+    });
+    assert.equal(typeof result, 'object');
+    assert.deepEqual(result.body, {
+      delegated: 'update-index',
+      jobs: 7,
+    });
+    sinon.assert.callCount(invoke, result.body.jobs);
+  }).timeout(50000);
 });

@@ -11,7 +11,7 @@
  */
 
 const { wrap } = require('@adobe/helix-status');
-const request = require('request-promise-native');
+const request = require('request');
 const minimatch = require('minimatch');
 const openwhisk = require('openwhisk');
 const tar = require('tar-stream');
@@ -32,44 +32,48 @@ async function main({
 
   const ow = openwhisk();
 
-  const list = tar.extract();
-  const jobs = [];
+  const prom = new Promise((resolve) => {
+    const list = tar.extract();
+    const jobs = [];
 
-  list.on('entry', (header, stream, next) => {
-    const path = strip(header.name, 1);
+    list.on('entry', (header, stream, next) => {
+      const path = strip(header.name, 1);
 
-    if (minimatch(path, pattern)) {
-      ow.actions.invoke({
-        name: 'helix-index/index-file@1.2.1',
-        blocking: false,
-        result: false,
-        params: {
-          owner, repo, ref, path, branch, sha: 'initial', token,
-        },
+      if (minimatch(path, pattern)) {
+        ow.actions.invoke({
+          name: 'helix-index/index-file@1.2.1',
+          blocking: false,
+          result: false,
+          params: {
+            owner, repo, ref, path, branch, sha: 'initial', token,
+          },
+        });
+        jobs.push(path);
+      }
+
+      stream.on('end', () => {
+        next();
       });
-      jobs.push(path);
-    }
 
-    stream.on('end', () => {
-      next();
+      stream.resume();
     });
 
-    stream.resume();
+    list.on('finish', () => {
+      resolve({
+        statusCode: 201,
+        body: {
+          delegated: 'update-index',
+          jobs: jobs.length,
+        },
+      });
+    });
+
+    request(`https://github.com/${owner}/${repo}/tarball/${ref}`)
+      .pipe(createGunzip())
+      .pipe(list);
   });
 
-  await request(
-    `https://github.com/${owner}/${repo}/tarball/${ref}`,
-  )
-    .pipe(createGunzip())
-    .pipe(list);
-
-  return {
-    statusCode: 201,
-    body: {
-      delegated: 'update-index',
-      jobs,
-    },
-  };
+  return prom;
 }
 
 module.exports = { main: wrap(main) };
