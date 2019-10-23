@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+const { info, error, rootLogger, CoralogixLogger } = require('@adobe/helix-log');
 const { wrap } = require('@adobe/helix-status');
 const phin = require('phin');
 const minimatch = require('minimatch');
@@ -18,14 +19,20 @@ const tar = require('tar-stream');
 const { createGunzip } = require('gunzip-stream');
 const strip = require('strip-dirs');
 
+
 /**
  * This is the main function
  * @param {string} name name of the person to greet
  * @returns {object} a greeting
  */
 async function main({
-  owner, repo, ref, branch, pattern = '**/*.{md,jpg}', token,
+  owner, repo, ref, branch, pattern = '**/*.{md,jpg}', token, coralogixToken,
 } = {}) {
+
+  rootLogger.loggers.set('coralogix', new CoralogixLogger(
+    coralogixToken, "test", "/trieloff/helix-index-big-tree",
+  ));
+
   if (!(owner && repo && ref && branch)) {
     console.error('Required arguments missing');
     return {
@@ -49,7 +56,7 @@ async function main({
       if (minimatch(path, pattern)) {
         count++;
         if (new Date().getTime()-lastpt > 5000) {
-          console.log('invoking #', count, path);
+          info('invoking #', count, path);
           lastpt = new Date().getTime();
         }
         ow.actions.invoke({
@@ -73,7 +80,7 @@ async function main({
     });
 
     list.on('finish', () => {
-      console.log('tar finished');
+      info('tar finished');
       resolve({
         statusCode: 201,
         body: {
@@ -94,10 +101,10 @@ async function main({
     });
   });
 
-  console.log('donwload started');
+  info('donwload started');
 
   const res = await prom;
-  console.log('completed');
+  info('completed');
   return res;
   } catch (e) {
     console.error(e);
