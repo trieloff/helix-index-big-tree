@@ -53,7 +53,7 @@ async function main({
 
       let lastpt = new Date().getTime();
       let count = 0;
-      list.on('entry', (header, stream, next) => {
+      list.on('entry', async (header, stream, next) => {
         const path = strip(header.name, 1);
 
         if (minimatch(path, pattern)) {
@@ -63,24 +63,26 @@ async function main({
             lastpt = new Date().getTime();
           }
           batch.push(path);
-          if (batch.length >= batchsize) {
+          if (batch.length >= Number.parseInt(batchsize, 10)) {
             const paths = batch.slice();
             // start a new batch
             batch = [];
 
             info(`invoking #${count} with ${paths.length} items`);
-            ow.actions.invoke({
-              name: 'helix-index/index-file@1.2.1',
-              blocking: false,
-              result: false,
-              params: {
-                owner, repo, ref, path, paths, branch, sha: 'initial', token,
-              },
-            }).then(() => {
+            try {
+              ow.actions.invoke({
+                name: 'helix-index/index-file@1.2.1',
+                blocking: false,
+                result: false,
+                params: {
+                  owner, repo, ref, path, paths, branch, sha: 'initial', token,
+                },
+              });
               jobs.push(...paths);
-            }).catch(() => {
-              failures.push(...path);
-            });
+            } catch (e) {
+              error(e);
+              failures.push(...paths);
+            }
           }
         }
 
@@ -97,18 +99,20 @@ async function main({
         const paths = batch.slice();
         // start a new batch
         batch = [];
-        await ow.actions.invoke({
-          name: 'helix-index/index-file@1.2.1',
-          blocking: false,
-          result: false,
-          params: {
-            owner, repo, ref, paths, branch, sha: 'initial', token,
-          },
-        }).then(() => {
+        try {
+          await ow.actions.invoke({
+            name: 'helix-index/index-file@1.2.1',
+            blocking: false,
+            result: false,
+            params: {
+              owner, repo, ref, paths, branch, sha: 'initial', token,
+            },
+          });
           jobs.push(...paths);
-        }).catch(() => {
+        } catch (e) {
+          error(e);
           failures.push(...paths);
-        });
+        }
 
         resolve({
           statusCode: 201,
