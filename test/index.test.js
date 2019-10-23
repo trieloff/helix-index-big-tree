@@ -94,4 +94,20 @@ describe('Index Tests', () => {
     });
     sinon.assert.callCount(invoke, result.body.jobs);
   }).timeout(50000);
+
+  it.only('index super large repo', async () => {
+    const result = await index({
+      owner: 'MicrosoftDocs',
+      repo: 'azure-docs',
+      ref: 'a28fc7ad76fcbf92cbdcba7f2908ec1226e494ad',
+      branch: 'master',
+      pattern: '**/*.md',
+    });
+    assert.equal(typeof result, 'object');
+    assert.deepEqual(result.body, {
+      delegated: 'update-index',
+      jobs: 7,
+    });
+    sinon.assert.callCount(invoke, result.body.jobs);
+  }).timeout(5000000);
 });

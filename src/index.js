@@ -43,6 +43,7 @@ async function main({
 
     list.on('entry', (header, stream, next) => {
       const path = strip(header.name, 1);
+      console.log(path);
 
       if (minimatch(path, pattern)) {
         console.log('invoking', path);
@@ -55,10 +56,11 @@ async function main({
           },
         });
         jobs.push(path);
+      } else {
+        
       }
 
       stream.on('end', () => {
-        console.log('stream end');
         next();
       });
 
@@ -85,10 +87,10 @@ async function main({
 
   const res = await prom;
   console.log('completed');
-  return prom;
+  return res;
   } catch (e) {
     console.error(e);
-    
+
   }
 }
 
