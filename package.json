@@ -37,6 +37,7 @@
     "gunzip-stream": "^1.0.1",
     "minimatch": "^3.0.4",
     "openwhisk": "^3.20.0",
+    "phin": "^3.4.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
     "strip-dirs": "^3.0.0",

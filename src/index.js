@@ -11,7 +11,7 @@
  */
 
 const { wrap } = require('@adobe/helix-status');
-const request = require('request');
+const phin = require('phin');
 const minimatch = require('minimatch');
 const openwhisk = require('openwhisk');
 const tar = require('tar-stream');
@@ -41,12 +41,17 @@ async function main({
     const list = tar.extract();
     const jobs = [];
 
+    let lastpt = new Date().getTime();
+    let count = 0;
     list.on('entry', (header, stream, next) => {
       const path = strip(header.name, 1);
-      console.log(path);
 
       if (minimatch(path, pattern)) {
-        console.log('invoking', path);
+        count++;
+        if (new Date().getTime()-lastpt > 5000) {
+          console.log('invoking #', count, path);
+          lastpt = new Date().getTime();
+        }
         ow.actions.invoke({
           name: 'helix-index/index-file@1.2.1',
           blocking: false,
@@ -78,9 +83,15 @@ async function main({
       });
     });
 
-    request(`https://github.com/${owner}/${repo}/tarball/${ref}`)
-      .pipe(createGunzip())
-      .pipe(list);
+    phin({
+      url: `https://github.com/${owner}/${repo}/tarball/${ref}`,
+      stream: true,
+      followRedirects: true
+    }).then(res => {
+      res
+        .pipe(createGunzip())
+        .pipe(list);
+    });
   });
 
   console.log('donwload started');
