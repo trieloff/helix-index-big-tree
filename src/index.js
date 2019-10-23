@@ -28,10 +28,10 @@ const strip = require('strip-dirs');
  * @returns {object} a greeting
  */
 async function main({
-  owner, repo, ref, branch, pattern = '**/*.{md,jpg}', token, coralogixToken,
+  owner, repo, ref, branch, pattern = '**/*.{md,jpg}', token, CORALOGIX_TOKEN,
 } = {}) {
   rootLogger.loggers.set('coralogix', new CoralogixLogger(
-    coralogixToken, 'test', '/trieloff/helix-index-big-tree',
+    CORALOGIX_TOKEN, 'test', '/trieloff/helix-index-big-tree',
   ));
 
   if (!(owner && repo && ref && branch)) {
