@@ -28,7 +28,7 @@ const strip = require('strip-dirs');
  * @returns {object} a greeting
  */
 async function main({
-  owner, repo, ref, branch, pattern = '**/*.{md,jpg}', token, CORALOGIX_TOKEN,
+  owner, repo, ref, branch, pattern = '**/*.{md,jpg}', token, CORALOGIX_TOKEN, batchsize = 1,
 } = {}) {
   rootLogger.loggers.set('coralogix', new CoralogixLogger(
     CORALOGIX_TOKEN, 'test', '/trieloff/helix-index-big-tree',
@@ -49,6 +49,7 @@ async function main({
       const list = tar.extract();
       const jobs = [];
       const failures = [];
+      let batch = [];
 
       let lastpt = new Date().getTime();
       let count = 0;
@@ -58,21 +59,29 @@ async function main({
         if (minimatch(path, pattern)) {
           count += 1;
           if (new Date().getTime() - lastpt > 5000) {
-            info('invoking #', count, path);
+            info('batching #', count, path);
             lastpt = new Date().getTime();
           }
-          ow.actions.invoke({
-            name: 'helix-index/index-file@1.2.1',
-            blocking: false,
-            result: false,
-            params: {
-              owner, repo, ref, path, branch, sha: 'initial', token,
-            },
-          }).then(() => {
-            jobs.push(path);
-          }).catch(() => {
-            failures.push(path);
-          });
+          batch.push(path);
+          if (batch.length >= batchsize) {
+            const paths = batch.slice();
+            // start a new batch
+            batch = [];
+
+            info(`invoking #${count} with ${paths.length} items`);
+            ow.actions.invoke({
+              name: 'helix-index/index-file@1.2.1',
+              blocking: false,
+              result: false,
+              params: {
+                owner, repo, ref, path, paths, branch, sha: 'initial', token,
+              },
+            }).then(() => {
+              jobs.push(...paths);
+            }).catch(() => {
+              failures.push(...path);
+            });
+          }
         }
 
         stream.on('end', () => {
@@ -82,8 +91,25 @@ async function main({
         stream.resume();
       });
 
-      list.on('finish', () => {
+      list.on('finish', async () => {
         info('tar finished');
+
+        const paths = batch.slice();
+        // start a new batch
+        batch = [];
+        await ow.actions.invoke({
+          name: 'helix-index/index-file@1.2.1',
+          blocking: false,
+          result: false,
+          params: {
+            owner, repo, ref, paths, branch, sha: 'initial', token,
+          },
+        }).then(() => {
+          jobs.push(...paths);
+        }).catch(() => {
+          failures.push(...paths);
+        });
+
         resolve({
           statusCode: 201,
           body: {
