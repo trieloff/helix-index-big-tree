@@ -10,7 +10,9 @@
  * governing permissions and limitations under the License.
  */
 
-const { info, error, rootLogger, CoralogixLogger } = require('@adobe/helix-log');
+const {
+  info, error, rootLogger, CoralogixLogger,
+} = require('@adobe/helix-log');
 const { wrap } = require('@adobe/helix-status');
 const phin = require('phin');
 const minimatch = require('minimatch');
@@ -28,87 +30,92 @@ const strip = require('strip-dirs');
 async function main({
   owner, repo, ref, branch, pattern = '**/*.{md,jpg}', token, coralogixToken,
 } = {}) {
-
   rootLogger.loggers.set('coralogix', new CoralogixLogger(
-    coralogixToken, "test", "/trieloff/helix-index-big-tree",
+    coralogixToken, 'test', '/trieloff/helix-index-big-tree',
   ));
 
   if (!(owner && repo && ref && branch)) {
-    console.error('Required arguments missing');
+    error('Required arguments missing');
     return {
       statusCode: 400,
-      body: 'Required arguments missing'
-    }
+      body: 'Required arguments missing',
+    };
   }
 
   const ow = openwhisk();
 
   try {
-  const prom = new Promise((resolve) => {
-    const list = tar.extract();
-    const jobs = [];
+    const prom = new Promise((resolve) => {
+      const list = tar.extract();
+      const jobs = [];
+      const failures = [];
 
-    let lastpt = new Date().getTime();
-    let count = 0;
-    list.on('entry', (header, stream, next) => {
-      const path = strip(header.name, 1);
+      let lastpt = new Date().getTime();
+      let count = 0;
+      list.on('entry', (header, stream, next) => {
+        const path = strip(header.name, 1);
 
-      if (minimatch(path, pattern)) {
-        count++;
-        if (new Date().getTime()-lastpt > 5000) {
-          info('invoking #', count, path);
-          lastpt = new Date().getTime();
+        if (minimatch(path, pattern)) {
+          count += 1;
+          if (new Date().getTime() - lastpt > 5000) {
+            info('invoking #', count, path);
+            lastpt = new Date().getTime();
+          }
+          ow.actions.invoke({
+            name: 'helix-index/index-file@1.2.1',
+            blocking: false,
+            result: false,
+            params: {
+              owner, repo, ref, path, branch, sha: 'initial', token,
+            },
+          }).then(() => {
+            jobs.push(path);
+          }).catch(() => {
+            failures.push(path);
+          });
         }
-        ow.actions.invoke({
-          name: 'helix-index/index-file@1.2.1',
-          blocking: false,
-          result: false,
-          params: {
-            owner, repo, ref, path, branch, sha: 'initial', token,
+
+        stream.on('end', () => {
+          next();
+        });
+
+        stream.resume();
+      });
+
+      list.on('finish', () => {
+        info('tar finished');
+        resolve({
+          statusCode: 201,
+          body: {
+            delegated: 'update-index',
+            jobs: jobs.length,
+            failures,
           },
         });
-        jobs.push(path);
-      } else {
-        
-      }
-
-      stream.on('end', () => {
-        next();
       });
 
-      stream.resume();
-    });
-
-    list.on('finish', () => {
-      info('tar finished');
-      resolve({
-        statusCode: 201,
-        body: {
-          delegated: 'update-index',
-          jobs: jobs.length,
-        },
+      phin({
+        url: `https://github.com/${owner}/${repo}/tarball/${ref}`,
+        stream: true,
+        followRedirects: true,
+      }).then((res) => {
+        res
+          .pipe(createGunzip())
+          .pipe(list);
       });
     });
 
-    phin({
-      url: `https://github.com/${owner}/${repo}/tarball/${ref}`,
-      stream: true,
-      followRedirects: true
-    }).then(res => {
-      res
-        .pipe(createGunzip())
-        .pipe(list);
-    });
-  });
+    info('download started');
 
-  info('donwload started');
-
-  const res = await prom;
-  info('completed');
-  return res;
+    const res = await prom;
+    info('completed');
+    return res;
   } catch (e) {
-    console.error(e);
-
+    error(e);
+    return {
+      statusCode: 500,
+      body: e.message,
+    };
   }
 }
 
