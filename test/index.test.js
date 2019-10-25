@@ -64,19 +64,43 @@ describe('Index Tests', () => {
   });
 
   it('index function makes HTTP requests', async () => {
+    const batchsize = 1;
     const result = await index({
       owner: 'trieloff',
       repo: 'helix-demo',
       ref: 'e266e69024853cc6b25fdcfb963d2d0014162f1c',
       branch: 'master',
+      batchsize
     });
     assert.equal(typeof result, 'object');
-    assert.deepEqual(result.body, {
+    assert.deepEqual(result, {
+      statusCode: 201,
       delegated: 'update-index',
+      failures: [],
       jobs: 1,
     });
 
-    sinon.assert.callCount(invoke, result.body.jobs);
+    sinon.assert.callCount(invoke, 1);
+  }).timeout(2000);
+
+  it('index function makes HTTP requests with custom batchsize', async () => {
+    const batchsize = 10;
+    const result = await index({
+      owner: 'trieloff',
+      repo: 'helix-demo',
+      ref: 'e266e69024853cc6b25fdcfb963d2d0014162f1c',
+      branch: 'master',
+      batchsize
+    });
+    assert.equal(typeof result, 'object');
+    assert.deepEqual(result, {
+      statusCode: 201,
+      delegated: 'update-index',
+      failures: [],
+      jobs: 1,
+    });
+
+    sinon.assert.callCount(invoke, 1);
   }).timeout(2000);
 
   it('index filters by pattern', async () => {
@@ -86,13 +110,16 @@ describe('Index Tests', () => {
       ref: 'ca8959afbb2668c761e47a4563f054da2444ab30',
       branch: 'master',
       pattern: '**/*.{md,html}',
+      batchsize: 10
     });
     assert.equal(typeof result, 'object');
-    assert.deepEqual(result.body, {
+    assert.deepEqual(result, {
+      statusCode: 201,
+      failures: [],
       delegated: 'update-index',
       jobs: 7,
     });
-    sinon.assert.callCount(invoke, result.body.jobs);
+    sinon.assert.callCount(invoke, 1);
   }).timeout(50000);
 
   it.only('index super large repo', async () => {
@@ -102,11 +129,12 @@ describe('Index Tests', () => {
       ref: 'a28fc7ad76fcbf92cbdcba7f2908ec1226e494ad',
       branch: 'master',
       pattern: '**/*.md',
+      batchsize: 1000
     });
     assert.equal(typeof result, 'object');
-    assert.deepEqual(result.body, {
+    assert.deepEqual(result, {
       delegated: 'update-index',
-      jobs: 7,
+      jobs: 1451,
     });
     sinon.assert.callCount(invoke, result.body.jobs);
   }).timeout(5000000);

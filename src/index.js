@@ -99,28 +99,30 @@ async function main({
         const paths = batch.slice();
         // start a new batch
         batch = [];
-        try {
-          await ow.actions.invoke({
-            name: 'helix-index/index-file@1.2.1',
-            blocking: false,
-            result: false,
-            params: {
-              owner, repo, ref, paths, branch, sha: 'initial', token,
-            },
-          });
-          jobs.push(...paths);
-        } catch (e) {
-          error(e);
-          failures.push(...paths);
+        info('batch complete', paths.length);
+        if (paths.length > 0) {
+          info(`invoking final batch with ${paths.length} items`);
+          try {
+            await ow.actions.invoke({
+              name: 'helix-index/index-file@1.2.1',
+              blocking: false,
+              result: false,
+              params: {
+                owner, repo, ref, paths, branch, sha: 'initial', token,
+              },
+            });
+            jobs.push(...paths);
+          } catch (e) {
+            error(e);
+            failures.push(...paths);
+          }
         }
 
         resolve({
           statusCode: 201,
-          body: {
-            delegated: 'update-index',
-            jobs: jobs.length,
-            failures,
-          },
+          delegated: 'update-index',
+          jobs: jobs.length,
+          failures,
         });
       });
 
