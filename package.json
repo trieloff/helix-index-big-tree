@@ -2,7 +2,7 @@
   "name": "@adobe/helix-index-big-tree",
   "version": "1.4.4",
   "private": true,
-  "description": "Example Helix Service",
+  "description": "Helix Index Big Tree",
   "main": "src/index.js",
   "scripts": {
     "test": " nyc --reporter=text --reporter=lcov -i -g 'Post-Deploy' --check-coverage --branches 100 --statements 100 --lines 100 mocha",
@@ -23,14 +23,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/adobe/helix-service"
+    "url": "https://github.com/adobe/helix-index-big-tree"
   },
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/adobe/helix-service/issues"
+    "url": "https://github.com/adobe/helix-index-big-tree/issues"
   },
-  "homepage": "https://github.com/adobe/helix-service#readme",
+  "homepage": "https://github.com/adobe/helix-index-big-tree#readme",
   "dependencies": {
     "@adobe/helix-log": "^3.0.0",
     "@adobe/helix-status": "5.1.1",
@@ -84,9 +84,9 @@
   },
   "statuspage": {
     "name": "Helix Service",
-    "group": "Development|Publishing|Delivery"
+    "group": "Publishing"
   },
   "newrelic": {
-    "group_policy": "Development|Publishing|Delivery Repeated Failure"
+    "group_policy": "Publishing Repeated Failure"
   }
 }
