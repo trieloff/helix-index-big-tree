@@ -57,7 +57,7 @@ describe('Index Tests', () => {
     }).main;
   });
 
-  it('index function bails if neccessary arguments are missing', async () => {
+  it('index function bails if necessary arguments are missing', async () => {
     const res = await index();
     assert.equal(res.statusCode, 400);
     assert.equal(res.body, 'Required arguments missing');
@@ -70,7 +70,7 @@ describe('Index Tests', () => {
       repo: 'helix-demo',
       ref: 'e266e69024853cc6b25fdcfb963d2d0014162f1c',
       branch: 'master',
-      batchsize
+      batchsize,
     });
     assert.equal(typeof result, 'object');
     assert.deepEqual(result, {
@@ -90,7 +90,7 @@ describe('Index Tests', () => {
       repo: 'helix-demo',
       ref: 'e266e69024853cc6b25fdcfb963d2d0014162f1c',
       branch: 'master',
-      batchsize
+      batchsize,
     });
     assert.equal(typeof result, 'object');
     assert.deepEqual(result, {
@@ -110,7 +110,7 @@ describe('Index Tests', () => {
       ref: 'ca8959afbb2668c761e47a4563f054da2444ab30',
       branch: 'master',
       pattern: '**/*.{md,html}',
-      batchsize: 10
+      batchsize: 10,
     });
     assert.equal(typeof result, 'object');
     assert.deepEqual(result, {
@@ -122,14 +122,14 @@ describe('Index Tests', () => {
     sinon.assert.callCount(invoke, 1);
   }).timeout(50000);
 
-  it.only('index super large repo', async () => {
+  it.skip('index super large repo', async () => {
     const result = await index({
       owner: 'MicrosoftDocs',
       repo: 'azure-docs',
       ref: 'a28fc7ad76fcbf92cbdcba7f2908ec1226e494ad',
       branch: 'master',
       pattern: '**/*.md',
-      batchsize: 1000
+      batchsize: 1000,
     });
     assert.equal(typeof result, 'object');
     assert.deepEqual(result, {
