@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/adobe/helix-index-big-tree#readme",
   "dependencies": {
-    "@adobe/helix-log": "3.1.0",
+    "@adobe/helix-log": "4.0.0",
     "@adobe/helix-status": "5.3.0",
     "epsagon": "1.41.1",
     "gunzip-stream": "1.0.1",
