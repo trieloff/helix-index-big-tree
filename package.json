@@ -13,13 +13,12 @@
     "docs": "npx jsdoc2md -c .jsdoc.json --files 'src/*.js'  > docs/API.md",
     "commit": "git-cz",
     "build": "wsk-builder -v",
-    "deploy": "wsk-builder -v --deploy --timeout 300000 --web-export false",
+    "deploy": "wsk-builder -v --deploy --timeout 300000 --web-export false --test",
     "deploy-sequences": "wsk-builder --no-build -no-hints -l latest -l major -l minor",
     "deploy-ci": "wsk-builder -v --deploy --timeout 300000 --pkgVersion=ci$CIRCLE_BUILD_NUM -l ci --web-export false"
   },
   "wsk": {
-    "name": "helix-index/index-big-tree@${version}",
-    "linksPackage": "helix-services"
+    "name": "services/index-big-tree@${version}"
   },
   "repository": {
     "type": "git",
