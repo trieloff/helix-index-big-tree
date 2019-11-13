@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/adobe/helix-index-big-tree/compare/v1.0.0...v1.0.1) (2019-11-13)
+
+
+### Bug Fixes
+
+* **deploy:** use common packages ([360c7d7](https://github.com/adobe/helix-index-big-tree/commit/360c7d732c80ee63d56834a0dccc3a4dd853e939))
+
 # 1.0.0 (2019-11-13)
 
 
