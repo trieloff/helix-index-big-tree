@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/adobe/helix-index-big-tree/compare/v1.0.3...v1.0.4) (2019-11-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency phin to v3.4.1 ([710b2a4](https://github.com/adobe/helix-index-big-tree/commit/710b2a4af507b8faaf597037bc68cbb05fe18219))
+
 ## [1.0.3](https://github.com/adobe/helix-index-big-tree/compare/v1.0.2...v1.0.3) (2019-11-16)
 
 
