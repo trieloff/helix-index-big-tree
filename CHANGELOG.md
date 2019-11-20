@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/adobe/helix-index-big-tree/compare/v1.0.4...v1.0.5) (2019-11-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-status to v7 ([3331839](https://github.com/adobe/helix-index-big-tree/commit/33318398d9d52e4e76004eca79f8b9d5e6ea4444))
+
 ## [1.0.4](https://github.com/adobe/helix-index-big-tree/compare/v1.0.3...v1.0.4) (2019-11-17)
 
 
