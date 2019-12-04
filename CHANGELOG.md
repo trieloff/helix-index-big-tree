@@ -1,3 +1,10 @@
+## [1.0.8](https://github.com/adobe/helix-index-big-tree/compare/v1.0.7...v1.0.8) (2019-12-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-log to v4.3.0 ([eec68c7](https://github.com/adobe/helix-index-big-tree/commit/eec68c7445aa8138ad102bbf20cbdeff628f7321))
+
 ## [1.0.7](https://github.com/adobe/helix-index-big-tree/compare/v1.0.6...v1.0.7) (2019-12-04)
 
 
