@@ -1,3 +1,10 @@
+## [1.0.10](https://github.com/adobe/helix-index-big-tree/compare/v1.0.9...v1.0.10) (2019-12-15)
+
+
+### Bug Fixes
+
+* **deps:** update external ([#29](https://github.com/adobe/helix-index-big-tree/issues/29)) ([5b9342f](https://github.com/adobe/helix-index-big-tree/commit/5b9342f43fa1ba57d59eb01ac57c779a0fbd8fea))
+
 ## [1.0.9](https://github.com/adobe/helix-index-big-tree/compare/v1.0.8...v1.0.9) (2019-12-05)
 
 
