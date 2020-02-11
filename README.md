@@ -15,8 +15,10 @@
 ## Usage
 
 ```bash
-curl https://adobeioruntime.net/api/v1/web/helix-index/helix-services-private/index-big-tree@v1
+wsk action invoke helix-services-private/index-big-tree@v1
 ```
+
+This service is meant to be invoked from [helix-index-tree](https://github.com/adobe/helix-index-tree), so it won't be made available as a web action.
 
 For more, see the [API documentation](docs/API.md).
 
