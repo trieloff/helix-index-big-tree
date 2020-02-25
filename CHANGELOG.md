@@ -1,3 +1,11 @@
+## [1.0.19](https://github.com/adobe/helix-index-big-tree/compare/v1.0.18...v1.0.19) (2020-02-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @adobe/helix-log to v4.5.1 ([0f4070b](https://github.com/adobe/helix-index-big-tree/commit/0f4070bff1821788b03aa8f25a4f17dc42060199))
+* **deps:** update dependency @adobe/helix-status to v7.1.2 ([3dac09e](https://github.com/adobe/helix-index-big-tree/commit/3dac09e6fd639a725be25e7210d74a3c3b622b09))
+
 ## [1.0.18](https://github.com/adobe/helix-index-big-tree/compare/v1.0.17...v1.0.18) (2020-02-18)
 
 
