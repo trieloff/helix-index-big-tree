@@ -1,3 +1,10 @@
+## [1.0.21](https://github.com/adobe/helix-index-big-tree/compare/v1.0.20...v1.0.21) (2020-03-10)
+
+
+### Bug Fixes
+
+* **deps:** update dependency tar-stream to v2.1.1 ([#65](https://github.com/adobe/helix-index-big-tree/issues/65)) ([4020703](https://github.com/adobe/helix-index-big-tree/commit/4020703fb017d4d5b20c1a4bc45f576374163c99))
+
 ## [1.0.20](https://github.com/adobe/helix-index-big-tree/compare/v1.0.19...v1.0.20) (2020-03-02)
 
 
