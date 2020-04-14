@@ -18,8 +18,7 @@
     "deploy-ci": "wsk-builder -v --deploy --timeout 300000 --pkgVersion=ci$CIRCLE_BUILD_NUM -l ci --web-export false"
   },
   "wsk": {
-    "name": "helix-services-private/index-big-tree@${version}",
-    "linksPackage": "helix-services"
+    "name": "helix-services/index-big-tree@${version}"
   },
   "repository": {
     "type": "git",
