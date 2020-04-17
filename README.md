@@ -15,7 +15,7 @@
 ## Usage
 
 ```bash
-wsk action invoke helix-services-private/index-big-tree@v1
+wsk action invoke helix-services/index-big-tree@v1
 ```
 
 This service is meant to be invoked from [helix-index-tree](https://github.com/adobe/helix-index-tree), so it won't be made available as a web action.
