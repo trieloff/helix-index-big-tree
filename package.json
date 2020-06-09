@@ -1,6 +1,6 @@
 {
   "name": "@adobe/helix-index-big-tree",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "private": true,
   "description": "Helix Index Big Tree",
   "main": "src/index.js",
