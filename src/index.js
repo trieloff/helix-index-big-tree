@@ -21,7 +21,6 @@ const tar = require('tar-stream');
 const { createGunzip } = require('gunzip-stream');
 const strip = require('strip-dirs');
 
-
 /**
  * This is the main function
  * @param {string} name name of the person to greet
