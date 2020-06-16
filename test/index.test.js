@@ -43,7 +43,6 @@ describe('Index Tests', () => {
   });
   */
 
-
   let index;
   let invoke;
   beforeEach(() => {
