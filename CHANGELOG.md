@@ -1,3 +1,11 @@
+## [1.0.28](https://github.com/adobe/helix-index-big-tree/compare/v1.0.27...v1.0.28) (2020-06-30)
+
+
+### Bug Fixes
+
+* **deps:** update external ([b869906](https://github.com/adobe/helix-index-big-tree/commit/b8699061beda6fc3658122234d3f5475567fa1f8))
+* **deps:** update external ([#112](https://github.com/adobe/helix-index-big-tree/issues/112)) ([8b24eb7](https://github.com/adobe/helix-index-big-tree/commit/8b24eb7fd05773052a39b5c30acf5fe63b490fc7))
+
 ## [1.0.27](https://github.com/adobe/helix-index-big-tree/compare/v1.0.26...v1.0.27) (2020-06-09)
 
 
