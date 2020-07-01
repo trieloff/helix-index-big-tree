@@ -33,7 +33,7 @@
   "dependencies": {
     "@adobe/helix-log": "4.5.1",
     "@adobe/helix-status": "7.1.3",
-    "epsagon": "1.73.2",
+    "epsagon": "1.73.3",
     "gunzip-stream": "1.0.1",
     "minimatch": "3.0.4",
     "openwhisk": "3.21.2",
