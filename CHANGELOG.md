@@ -1,3 +1,10 @@
+## [1.0.29](https://github.com/adobe/helix-index-big-tree/compare/v1.0.28...v1.0.29) (2020-07-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency epsagon to v1.73.3 ([#114](https://github.com/adobe/helix-index-big-tree/issues/114)) ([8302232](https://github.com/adobe/helix-index-big-tree/commit/8302232200c67b92a18fbc637e3cdd81eeb2f210))
+
 ## [1.0.28](https://github.com/adobe/helix-index-big-tree/compare/v1.0.27...v1.0.28) (2020-06-30)
 
 
